@@ -14,6 +14,10 @@ sampler2D SpriteTextureSampler = sampler_state
 	Texture = <SpriteTexture>;
 };
 
+float2 RedOffset;
+float2 GreenOffset;
+float2 BlueOffset;
+
 struct VertexShaderOutput
 {
 	float4 Position : SV_POSITION;
@@ -26,12 +30,6 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float2 screenPos = (input.TextureCoordinates - float2(0.5, 0.5)) * 2.0;
 	
     float distFromCenter = length(screenPos);
-	
-    float strength = 0.005;
-	
-    float2 RedOffset = float2(1, 1) * strength;
-    float2 GreenOffset = float2(0, 0) * strength;
-    float2 BlueOffset = float2(-1, -1) * strength;
 	
     float2 redPos = input.TextureCoordinates + RedOffset * distFromCenter;
     float2 greenPos = input.TextureCoordinates + GreenOffset * distFromCenter;

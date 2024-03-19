@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Claustrophobia
+namespace MonogameShaderTesting
 {
     internal static class Input
     {

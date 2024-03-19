@@ -19,11 +19,29 @@
 /processorParam:DebugMode=Auto
 /build:Bulge.fx
 
+#begin Bulge.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Bulge.fx
+
 #begin ColorCorrect.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:ColorCorrect.fx
+
+#begin ColorCorrect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:ColorCorrect.fx
+
+#begin TestPostShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:TestPostShader.fx
 
 #begin TestPostShader.fx
 /importer:EffectImporter

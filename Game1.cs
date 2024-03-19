@@ -6,9 +6,9 @@ using MonoGame;
 using MonoGame.OpenGL;
 using System;
 using System.Linq;
-using Claustrophobia.Content;
+using MonogameShaderTesting.ShaderCode;
 
-namespace Claustrophobia
+namespace MonogameShaderTesting
 {
     public class Game1 : Game
     {
@@ -25,6 +25,8 @@ namespace Claustrophobia
 
         Vector2 playerPos;
         float playerRot;
+
+        private int _bulgeEffectIndex, _chromaticAberrationIndex, _colorCorrectIndex;
 
         public Game1()
         {
@@ -51,9 +53,7 @@ namespace Claustrophobia
 
             _postShaderManager = new PostShaderManager(GraphicsDevice);
 
-            _postShaderManager.AddShaderPass(Content.Load<Effect>("Bulge"));
-            _postShaderManager.AddShaderPass(Content.Load<Effect>("TestPostShader"));
-            _postShaderManager.AddShaderPass(Content.Load<Effect>("ColorCorrect"));
+            LoadAndInitializeShaders();
         }
 
         protected override void Update(GameTime gameTime)
@@ -79,23 +79,48 @@ namespace Claustrophobia
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _postShaderManager.SetParameter(2, "Saturation",1f);
-            _postShaderManager.SetParameter(2, "Contrast",1f);
+            float time = (float)gameTime.TotalGameTime.TotalSeconds;
 
-            _postShaderManager.SetParameter(2, "RedMask", new Vector4(1.0f, 0.0f, 0.0f, 0.0f));
-            _postShaderManager.SetParameter(2, "GreenMask", new Vector4(0.0f, 1.0f, 0.0f, 0.0f));
-            _postShaderManager.SetParameter(2, "BlueMask", new Vector4(0.0f, 0.0f, 1.0f, 0.0f));
-            _postShaderManager.SetParameter(2, "AlphaMask", new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+            Point mousePos = Mouse.GetState().Position;
+            Vector2 center = new Vector2(mousePos.X, mousePos.Y) / new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 
-            _postShaderManager.SetParameter(2, "Gray", new Vector4(0.5f, 0.5f, 0.5f, 0.5f));
+            //_postShaderManager.SetParameter(_bulgeEffectIndex, "Center", new Vector2(0.5f, 0.5f) + new Vector2(MathF.Cos(time), MathF.Sin(time)) * (MathF.Sin(time * MathF.PI) + 1) / 2);
+            _postShaderManager.SetParameter(_bulgeEffectIndex, "Center", center);
 
-            _spriteBatch.Begin();
-            _spriteBatch.Draw(_niceTexture, playerPos, new Rectangle(0, 0, 10, 10), _playerColor, playerRot, new Vector2(5, 5), 10, SpriteEffects.None, 0);
-            _spriteBatch.End();
+            //_spriteBatch.Begin();
+            //_spriteBatch.Draw(_niceTexture, playerPos, new Rectangle(0, 0, 10, 10), _playerColor, playerRot, new Vector2(5, 5), 10, SpriteEffects.None, 0);
+            //_spriteBatch.End();
 
             _postShaderManager.DrawToTarget(_cleanOutputTarget, null);
 
             base.Draw(gameTime);
+        }
+
+        private void LoadAndInitializeShaders()
+        {
+            _bulgeEffectIndex = _postShaderManager.AddShaderPass(Content.Load<Effect>("Bulge"));
+
+            _postShaderManager.SetParameter(_bulgeEffectIndex, "Center", new Vector2(0.5f, 0.5f));
+            _postShaderManager.SetParameter(_bulgeEffectIndex, "BulgeExponent", 2.0f);
+            _postShaderManager.SetParameter(_bulgeEffectIndex, "BulgeStrength", 1f);
+
+            _chromaticAberrationIndex = _postShaderManager.AddShaderPass(Content.Load<Effect>("TestPostShader"));
+
+            _postShaderManager.SetParameter(_chromaticAberrationIndex, "RedOffset", new Vector2(0.005f, 0.005f));
+            _postShaderManager.SetParameter(_chromaticAberrationIndex, "GreenOffset", new Vector2(0.0f, 0.0f));
+            _postShaderManager.SetParameter(_chromaticAberrationIndex, "BlueOffset", new Vector2(-0.005f, -0.005f));
+
+            _colorCorrectIndex = _postShaderManager.AddShaderPass(Content.Load<Effect>("ColorCorrect"));
+
+            _postShaderManager.SetParameter(_colorCorrectIndex, "Saturation", 0.5f);
+            _postShaderManager.SetParameter(_colorCorrectIndex, "Contrast", 1f);
+
+            _postShaderManager.SetParameter(_colorCorrectIndex, "RedMask", new Vector4(1.0f, 0.0f, 0.0f, 0.0f));
+            _postShaderManager.SetParameter(_colorCorrectIndex, "GreenMask", new Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+            _postShaderManager.SetParameter(_colorCorrectIndex, "BlueMask", new Vector4(0.0f, 0.0f, 1.0f, 0.0f));
+            _postShaderManager.SetParameter(_colorCorrectIndex, "AlphaMask", new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+
+            _postShaderManager.SetParameter(_colorCorrectIndex, "Gray", new Vector4(0.5f, 0.5f, 0.5f, 0.5f));
         }
     }
 }

@@ -8,7 +8,7 @@ using MonoGame;
 using MonoGame.OpenGL;
 using Microsoft.Xna.Framework;
 
-namespace Claustrophobia.Content
+namespace MonogameShaderTesting.ShaderCode
 {
     internal class PostShaderManager
     {
@@ -53,6 +53,7 @@ namespace Claustrophobia.Content
                 source = target;
                 target = target == _swap0 ? _swap1 : _swap0;
             }
+            // Blit to output
             _graphicsDevice.SetRenderTarget(outputTarget);
             _spriteBatch.Begin();
             _spriteBatch.Draw(source, new Vector2(0, 0), Color.White);
